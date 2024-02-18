@@ -1,19 +1,21 @@
 <?php
-
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Authcontroller;
+use Illuminate\Support\Facades\Route;
 
 /*
 |---------------------------------
 | User Routes
 |---------------------------------
 */
-Route::get('/user', [UserController::class, 'show']);
-Route::post('/user/', [UserController::class, 'store']);
-Route::get('/user/{id}', [UserController::class, 'index']);
-Route::delete('/user/{id}', [UserController::class, 'destroy']);
-Route::put('/user/{id}', [UserController::class, 'update']);
+
+Route::group(['middleware' => 'auth:api', "prefix" => "user"], function () {
+    Route::get('/', [UserController::class, 'index']);
+    Route::post('/', [UserController::class, 'store']);
+    Route::get('/{id}', [UserController::class, 'show']);
+    Route::delete('/{id}', [UserController::class, 'destroy']);
+    Route::put('/{id}', [UserController::class, 'update']);
+});
 
 /*
 |---------------------------------
@@ -22,3 +24,7 @@ Route::put('/user/{id}', [UserController::class, 'update']);
 */
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
+
+// Route::get('/email/verify', function () {
+//     return view('auth.verify-email');
+// })->middleware('auth')->name('verification.notice');

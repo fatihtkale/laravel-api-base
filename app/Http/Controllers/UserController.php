@@ -12,6 +12,7 @@ class UserController extends Controller
      */
     public function index()
     {
+        return response()->json(User::all());
     }
 
     /**
@@ -27,7 +28,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        //
+        return response()->json(User::all());
     }
 
     /**

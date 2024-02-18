@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Auth\Events\Registered;
 
 class AuthController extends Controller
 {
@@ -30,7 +31,7 @@ class AuthController extends Controller
         }
 
         try {
-            if(! $token = Auth::attempt($input)){
+            if(!$token = Auth::attempt($input)){
                 return response()->json([
                     'status' => false,
                     'message' => 'invalid credentials',
@@ -43,15 +44,11 @@ class AuthController extends Controller
             ]);
         }
 
-        $success = [
-            'token' => $token,
-            'user' => auth()->user()
-        ];
-
         return response()->json([
             'status' => true,
             'message' => 'User Created Successfully',
-            'user' => $success
+            'token' => $token,
+            'user' => auth()->user()
         ], 200);
     }
     
@@ -68,7 +65,7 @@ class AuthController extends Controller
             [
                 'name' => 'required',
                 'email' => 'required|email|unique:users,email',
-                'password' => 'required'
+                'password' => 'required',
             ]
         );
 
@@ -93,6 +90,8 @@ class AuthController extends Controller
                 'erros' => $th
             ], 401);
         }
+
+        event(new Registered($user));
 
         return response()->json([
             'status' => true,
